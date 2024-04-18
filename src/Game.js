@@ -11,7 +11,7 @@ function Game() {
   const [rowsClues, setRowsClues] = useState(null);
   const [colsClues, setColsClues] = useState(null);
   const [waiting, setWaiting] = useState(false);
-
+  
   useEffect(() => {
     // Creation of the pengine server instance.    
     // This is executed just once, after the first render.    
@@ -31,7 +31,7 @@ function Game() {
     });
   }
 
-  function handleClick(i, j) {
+  function handleClick(i, j, checked) {
     // No action on click if we are waiting.
     if (waiting) {
       return;
@@ -51,21 +51,39 @@ function Game() {
     });
   }
 
+  // funcion que permite saber si el toggle esta en X (true) o en # (false) 
+  const [checked, setChecked] = React.useState(false);
+  const handleChange = () => {
+    setChecked(!checked);
+    console.log(checked);
+  };
+
   if (!grid) {
     return null;
   }
-
   const statusText = 'Keep playing!';
+ 
   return (
     <div className="game">
       <Board
         grid={grid}
         rowsClues={rowsClues}
         colsClues={colsClues}
-        onClick={(i, j) => handleClick(i, j)}
+        onClick={(i, j) => handleClick(i, j, checked)}
       />
       <div className="game-info">
         {statusText}
+        <div>
+            <label>
+              <input
+                type="checkbox"
+                checked={checked}
+                onChange={handleChange}
+              />
+              My Value
+            </label>
+            <p>Is "My Value" checked? {checked.toString()}</p>
+        </div>
       </div>
     </div>
   );
