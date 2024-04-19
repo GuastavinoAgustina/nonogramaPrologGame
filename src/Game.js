@@ -60,7 +60,7 @@ function Game() {
       }
       setWaiting(false);
     });
-
+    console.log(rowsSat);
     //Utilizar las variables ResGrid, RowSat para cambiar la parte grafica una vez que en prolog se verifiquen las columnas y filas
 
   }
@@ -92,6 +92,7 @@ function Game() {
               <input
                 type="checkbox"
                 checked={checked}
+                value={checked}
                 onChange={handleChange}
               />
               <span class="slider round"></span>
