@@ -20,14 +20,18 @@ replace(X, XIndex, Y, [Xi|Xs], [Xi|XsY]):-
 
 
 matchean([],[],1).
-matchean([X|XS],[],0).
+matchean(["X"|XS],[],RowSat):-matchean(XS,[],RowSat).
+matchean(["_"|XS],[],RowSat):-matchean(XS,[],RowSat).
+matchean(["X"|XS],[],0).
 matchean([],[Y|Ys],0).
 matchean(["X"|Xs],Ys,RowSat):-matchean(Xs,Ys,RowSat).
 matchean(["_"|Xs],Ys,RowSat):-matchean(Xs,Ys,RowSat).
 matchean(["#"|Xs],[Y|Ys],RowSat):- 
-	matchAux(Xs,Y-1,Zs,SatAux), 
+    Yaux is Y-1,
+	matchAux(Xs,Yaux,Zs,SatAux),
 	SatAux = 1,
 	matchean(Zs,Ys,RowSat).
+matchean(["#"|Xs],[Y|Ys],0).
 
 matchAux([],0,[],1).
 matchAux([],Y,[],0).
@@ -36,13 +40,15 @@ matchAux(["_"|Xs],Y,Xs,0).
 matchAux(["X"|Xs],0,Xs,1).
 matchAux(["X"|Xs],Y,Xs,0).
 matchAux(["#"|Xs],0,Xs,0).
-matchAux(["#"|Xs],Y,Zs,SatAux):- matchAux(Xs,Y-1,Zs,SatAux).
+matchAux(["#"|Xs],Y,Zs,SatAux):- 
+    Yaux is Y-1,
+    matchAux(Xs,Yaux,Zs,SatAux).
 
 check_row_sat([X|Xs],0,[Y|Ys],RowSat):- matchean(X,Y,RowSat).
-check_row_sat([X|Xs],Rown,[Y|Ys],RowSat):-
+check_row_sat([X|Xs],RowN,[Y|Ys],RowSat):-
 	RowN > 0,
-	RowN is RowN -1,
-	check_row_sat(Xs,Rown,Ys,RowSat).
+	RowNs is RowN -1,
+	check_row_sat(Xs,RowNs,Ys,RowSat).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
