@@ -64,11 +64,16 @@ body {
 }
 
 .game-info {
-  margin-left: 20px;
+  margin-left: 30px;
+  display: flex;
+  align-items: center;
 }
+
+/* estilo toggle */
 
 .switch {
   position: relative;
+
   display: inline-block;
   width: 60px;
   height: 34px;
@@ -87,7 +92,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #ccc;
+  background-color: #b9d6e0;
   -webkit-transition: .4s;
   transition: .4s;
 }
@@ -105,11 +110,11 @@ body {
 }
 
 input:checked + .slider {
-  background-color: #2196F3;
+  background-color: black;
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
+  box-shadow: 0 0 1px black;
 }
 
 input:checked + .slider:before {
@@ -118,7 +123,6 @@ input:checked + .slider:before {
   transform: translateX(26px);
 }
 
-/* Rounded sliders */
 .slider.round {
   border-radius: 34px;
 }
@@ -126,3 +130,5 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
+
+/* termina estilo toggle */

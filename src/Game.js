@@ -62,7 +62,7 @@ function Game() {
     });
 
     //Utilizar las variables ResGrid, RowSat para cambiar la parte grafica una vez que en prolog se verifiquen las columnas y filas
-    
+
   }
 
   // funcion que permite saber si el toggle esta en X (true) o en # (false) 
@@ -75,7 +75,7 @@ function Game() {
   if (!grid) {
     return null;
   }
-  const statusText = 'Keep playing!';
+  const statusText = '';
  
   return (
     <div className="game">
@@ -87,16 +87,17 @@ function Game() {
       />
       <div className="game-info">
         {statusText}
-        <div>
-            <label>
+        <div class="settings">
+            <label class="switch">
               <input
                 type="checkbox"
                 checked={checked}
                 onChange={handleChange}
               />
-              My Value
+              <span class="slider round"></span>
             </label>
-            <p>Is "My Value" checked? {checked.toString()}</p>
+            <p>Is "My Value" checked?</p>
+            <p>{checked.toString()}</p>
         </div>
       </div>
     </div>
