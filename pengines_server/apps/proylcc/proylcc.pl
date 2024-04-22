@@ -20,30 +20,47 @@ replace(X, XIndex, Y, [Xi|Xs], [Xi|XsY]):-
 
 
 matchean([],[],1).
-matchean([X|XS],[],0).
-matchean([],[Y|Ys],0).
-matchean(["X"|Xs],Ys,RowSat):-matchean(Xs,Ys,RowSat).
-matchean(["_"|Xs],Ys,RowSat):-matchean(Xs,Ys,RowSat).
-matchean(["#"|Xs],[Y|Ys],RowSat):- 
-	matchAux(Xs,Y-1,Zs,SatAux), 
-	SatAux = 1,
-	matchean(Zs,Ys,RowSat).
+matchean([],_Ys,0).
+matchean([Var|_XS],[],0):-Var == "#".
+matchean([_S|XS],[],RowSat):-matchean(XS,[],RowSat).
+matchean([Var|Xs],[Y|Ys],RowSat):- 
+    Var == "#",
+    Yaux is Y-1,
+	matchAux(Xs,Yaux,Zs,SatAux),
+	verif_resul(SatAux,Zs,Ys,RowSat).
+matchean([_S|Xs],Ys,RowSat):-matchean(Xs,Ys,RowSat).
+
+verif_resul(1,Zs,Ys,RowSat):-matchean(Zs,Ys,RowSat).
+verif_resul(0,_Zs,_Ys,0).
 
 matchAux([],0,[],1).
-matchAux([],Y,[],0).
-matchAux(["_"|Xs],0,Xs,1).
-matchAux(["_"|Xs],Y,Xs,0).
-matchAux(["X"|Xs],0,Xs,1).
-matchAux(["X"|Xs],Y,Xs,0).
-matchAux(["#"|Xs],0,Xs,0).
-matchAux(["#"|Xs],Y,Zs,SatAux):- matchAux(Xs,Y-1,Zs,SatAux).
+matchAux([],_Y,[],0).
+matchAux([Var|Xs],0,Xs,0):-Var == "#".
+matchAux([_S|Xs],0,Xs,1).
+matchAux([Var|Xs],Y,Zs,SatAux):- 
+    Var == "#",
+    Yaux is Y-1,
+    matchAux(Xs,Yaux,Zs,SatAux).
+matchAux([_S|Xs],_Y,Xs,0).
 
-check_row_sat([X|Xs],0,[Y|Ys],RowSat):- matchean(X,Y,RowSat).
-check_row_sat([X|Xs],Rown,[Y|Ys],RowSat):-
+obtenerFila([X|_Xs],0,[Y|_Ys],X,Y).
+obtenerFila([_X|Xs],RowN,[_Y|Ys],Ws,Zs):-
 	RowN > 0,
-	RowN is RowN -1,
-	check_row_sat(Xs,Rown,Ys,RowSat).
+	RowNs is RowN -1,
+	obtenerFila(Xs,RowNs,Ys,Ws,Zs).
 
+obtenerElemento([X|_Xs],0,X).
+obtenerElemento([_X|Xs],N,Ws):-
+    N > 0,
+	Ns is N -1,
+	obtenerElemento(Xs,Ns,Ws).
+
+obtenerColumna([Xs],ColN,Ys,[Ws],Zs):- 
+    obtenerElemento(Xs,ColN,Ws),
+    obtenerElemento(Ys,ColN,Zs).
+obtenerColumna([X|Xs],ColN,Ys,[W|Ws],Zs):-
+    obtenerElemento(X,ColN,W),
+    obtenerColumna(Xs,ColN,Ys,Ws,Zs).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -62,4 +79,8 @@ put(Content,[RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat):-
 	Cell == Content
 		;
 	replace(_Cell, ColN, Content, Row, NewRow)),
-	check_row_sat(NewGrid,RowN,Rows_Clues,RowSat).
+
+	obtenerElemento(RowsClues,RowN,MyRowClues),
+	matchean(NewRow,MyRowClues,RowSat),
+	obtenerColumna(NewGrid,ColN,ColsClues,MyCol,MyColClues),
+	matchean(MyCol,MyColClues,ColSat).

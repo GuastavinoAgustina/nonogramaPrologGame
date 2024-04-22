@@ -50,17 +50,22 @@ function Game() {
      // Content to put in the clicked square.
     const rowsCluesS = JSON.stringify(rowsClues);
     const colsCluesS = JSON.stringify(colsClues);
+    
     const queryS = `put("${content}", [${i},${j}], ${rowsCluesS}, ${colsCluesS}, ${squaresS}, ResGrid, RowSat, ColSat)`; // queryS = put("#",[0,1],[], [],[["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
     setWaiting(true);
+    
     pengine.query(queryS, (success, response) => {
       if (success) {
         setGrid(response['ResGrid']);
         setRowsSat(response['RowSat']);
         setColsSat(response['ColSat']);
+        
       }
       setWaiting(false);
     });
+    console.log(grid);
     console.log(rowsSat);
+    console.log(colsSat);
     //Utilizar las variables ResGrid, RowSat para cambiar la parte grafica una vez que en prolog se verifiquen las columnas y filas
 
   }
@@ -69,7 +74,6 @@ function Game() {
   const [checked, setChecked] = React.useState(false);
   const handleChange = () => {
     setChecked(!checked);
-    console.log(checked);
   };
 
   if (!grid) {
