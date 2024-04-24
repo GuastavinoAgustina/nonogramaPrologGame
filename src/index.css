@@ -136,6 +136,6 @@ input:checked + .slider:before {
 }
 
 .activeClue{
-  color: red;
+  color: white;
 }
 /* termina estilo toggle */
