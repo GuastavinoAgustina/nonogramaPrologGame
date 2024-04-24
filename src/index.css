@@ -18,7 +18,12 @@ body {
   padding: 0;
   text-align: center;
 }
-
+.relleno_negro{
+  background: black;
+}
+.relleno_blanco{
+  background: white;
+}
 .board {
   display: grid;
 }
@@ -26,6 +31,7 @@ body {
 .horizontal {
   display: flex;
 }
+
 
 .vertical {
   display: flex;
@@ -51,7 +57,7 @@ body {
 }
 
 .clue div {
-  margin: 2px
+  margin: 0.5px
 }
 
 .colClues .clue {
@@ -129,4 +135,7 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 
+.activeClue{
+  color: red;
+}
 /* termina estilo toggle */

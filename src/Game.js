@@ -43,9 +43,11 @@ function Game() {
     let content; // Content to put in the clicked square.
     if (checked){
       content = '#';
+      toggleSquareBlack("square"+i+j);
     }
     else{
       content = 'X';
+      toggleSquareWhite("square"+i+j);
     }
      // Content to put in the clicked square.
     const rowsCluesS = JSON.stringify(rowsClues);
@@ -64,11 +66,50 @@ function Game() {
       setWaiting(false);
     });
     console.log(grid);
-    console.log(rowsSat);
-    console.log(colsSat);
-    //Utilizar las variables ResGrid, RowSat para cambiar la parte grafica una vez que en prolog se verifiquen las columnas y filas
+    console.log("filaSat:"+rowsSat);
+    console.log("columnaSat:"+colsSat);
+    console.log("Coordenadas: [f:"+i+",c:"+j+"]");
+   
+    if(rowsSat===1){
+      activeClue("row"+i)
+      console.log("una fila se satifacio: " + i)
+    }
+    if(rowsSat===0){
+      inactiveClue("row"+i)
+      console.log("una fila se desactivo: " + i)
+    }
+
+    if(colsSat===1){
+      activeClue("col"+j)
+      console.log("una columna se satifacio: " + j)
+    }
+    if(colsSat===0){
+      inactiveClue("col"+j)
+      console.log("una columna se desactivo: " + j)
+    }
 
   }
+
+  function activeClue(id_name) {
+    var element = document.getElementById(id_name);
+    element.classList.add("activeClue");
+  }
+  function inactiveClue(id_name) {
+    var element = document.getElementById(id_name);
+    element.classList.remove("activeClue");
+  }
+
+  function toggleSquareBlack(id_name) {
+    var element = document.getElementById(id_name);
+    element.classList.remove("relleno_blanco");
+    element.classList.toggle("relleno_negro");
+  }
+  function toggleSquareWhite(id_name) {
+    var element = document.getElementById(id_name);
+    element.classList.remove("relleno_negro");
+    element.classList.toggle("relleno_blanco");
+  }
+  
 
   // funcion que permite saber si el toggle esta en X (true) o en # (false) 
   const [checked, setChecked] = React.useState(false);
@@ -102,7 +143,9 @@ function Game() {
               <span class="slider round"></span>
             </label>
             <p>Is "My Value" checked?</p>
-            <p>{checked.toString()}</p>
+            <div id="myDIV">
+              This is a DIV element.
+            </div>
         </div>
       </div>
     </div>

@@ -23,7 +23,9 @@ function Board({ grid, rowsClues, colsClues, onClick }) {
             >
                 <div>{/* top-left corner square */}</div>
                 {colsClues.map((clue, i) =>
+                    <div class="clue" id={"col"+i}>
                     <Clue clue={clue} key={i} />
+                    </div>
                 )}
             </div>
             <div className="horizontal">
@@ -36,7 +38,9 @@ function Board({ grid, rowsClues, colsClues, onClick }) {
                     }}
                 >
                     {rowsClues.map((clue, i) =>
+                        <div  id={"row"+i}>
                         <Clue clue={clue} key={i} />
+                        </div>
                     )}
                 </div>
                 <div className="board"
@@ -50,6 +54,8 @@ function Board({ grid, rowsClues, colsClues, onClick }) {
                                 value={cell}
                                 onClick={() => onClick(i, j)}
                                 key={i + j}
+                                i={i}
+                                j={j}
                             />
                         )
                     )}
