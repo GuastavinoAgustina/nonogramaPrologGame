@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Clue({ clue }) {
+function Clue({ clue}) {
     return (
         <div class="clue">
             {clue.map((num, i) =>

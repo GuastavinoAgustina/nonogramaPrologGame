@@ -66,32 +66,33 @@ function Game() {
         setGrid(response['ResGrid']);
         setRowsSat(response['RowSat']);
         setColsSat(response['ColSat']);
-        
-      }
+        console.log(grid);
+        console.log("filaSat:"+ setGrid(response['ResGrid']) );
+        console.log("columnaSat:"+colsSat);
+
+        console.log("Coordenadas: [f:"+i+",c:"+j+"]");
+   
+        if(response['RowSat']===1){
+          activeClue("row"+i)
+          activeClue("row"+i)
+          console.log("una fila se satifacio: " + i)
+        }
+        if(response['RowSat']===0){
+          inactiveClue("row"+i)
+          console.log("una fila se desactivo: " + i)
+        }
+    
+        if(response['ColSat']===1){
+          activeClue("col"+j)
+          console.log("una columna se satifacio: " + j)
+        }
+        if(response['ColSat']===0){
+          inactiveClue("col"+j)
+          console.log("una columna se desactivo: " + j)
+        }
+      }      
       setWaiting(false);
     });
-    console.log(grid);
-    console.log("filaSat:"+rowsSat);
-    console.log("columnaSat:"+colsSat);
-    console.log("Coordenadas: [f:"+i+",c:"+j+"]");
-   
-    if(rowsSat===1){
-      activeClue("row"+i)
-      console.log("una fila se satifacio: " + i)
-    }
-    if(rowsSat===0){
-      inactiveClue("row"+i)
-      console.log("una fila se desactivo: " + i)
-    }
-
-    if(colsSat===1){
-      activeClue("col"+j)
-      console.log("una columna se satifacio: " + j)
-    }
-    if(colsSat===0){
-      inactiveClue("col"+j)
-      console.log("una columna se desactivo: " + j)
-    }
 
   }
 
@@ -123,7 +124,7 @@ function Game() {
       <Board
         grid={grid}
         rowsClues={rowsClues}
-        colsClues={colsClues}
+        colsClues={colsClues}        
         onClick={(i, j) => handleClick(i, j, checked)}
       />
       <div className="game-info">
