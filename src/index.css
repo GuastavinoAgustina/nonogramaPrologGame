@@ -28,7 +28,6 @@ body {
 .board {
   display: grid;
 }
-
 .horizontal {
   display: flex;
 }
@@ -54,6 +53,7 @@ body {
   border-radius: 8px;
   margin: 5px;
   padding: 5px;
+  
 }
 .clueSat {
   background-color: #0d4d5c;
@@ -82,7 +82,7 @@ body {
 
 .switch {
   position: relative;
-  margin-left: 100px;
+  /*margin-left: 100px;*/
   display: inline-block;
   width: 60px;
   height: 34px;
@@ -139,12 +139,12 @@ input:checked + .slider:before {
 }
 .game {
   display: flex;
-  flex-direction: column; /* Asegúrate de que los elementos se apilen verticalmente */
-  
+  flex-direction: column; 
+  align-items: center;
 }
 
 .game-info {
-  margin-top: 20px; /* Ajusta el margen para dejar espacio entre el tablero y el interruptor */
+  margin-top: 20px; 
 }
 
 /* termina estilo toggle */
