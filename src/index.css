@@ -55,7 +55,10 @@ body {
   margin: 5px;
   padding: 5px;
 }
-
+.clueSat {
+  background-color: #0d4d5c;
+  color: white; 
+}
 .clue div {
   margin: 2px
 }
@@ -79,7 +82,7 @@ body {
 
 .switch {
   position: relative;
-
+  margin-left: 100px;
   display: inline-block;
   width: 60px;
   height: 34px;
@@ -134,9 +137,14 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
-.clueSat {
-  background-color: #0d4d5c;
-  color: white; 
+.game {
+  display: flex;
+  flex-direction: column; /* Asegúrate de que los elementos se apilen verticalmente */
+  
+}
+
+.game-info {
+  margin-top: 20px; /* Ajusta el margen para dejar espacio entre el tablero y el interruptor */
 }
 
 /* termina estilo toggle */

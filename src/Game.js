@@ -13,7 +13,7 @@ function Game() {
   const [waiting, setWaiting] = useState(false);
   const [rowsCluesSat, setRowsCluesSat] = useState([]);
   const [colsCluesSat, setColsCluesSat] = useState([]);
-  
+  const [checked, setChecked] = React.useState(true);
   useEffect(() => {
     // Creation of the pengine server instance.    
     // This is executed just once, after the first render.    
@@ -65,20 +65,6 @@ function Game() {
         console.log(rowsCluesSat);
         console.log(colsCluesSat);
         console.log(rowsClues);
-    
-        /**if(response['RowSat']===1){
-          activeClue("row"+i)
-        }
-        if(response['RowSat']===0){
-          inactiveClue("row"+i)
-        }
-    
-        if(response['ColSat']===1){
-          activeClue("col"+j)
-        }
-        if(response['ColSat']===0){
-          inactiveClue("col"+j)
-        }**/
       }
       setWaiting(false);
     });
@@ -87,8 +73,6 @@ function Game() {
 
   }
 
-  // funcion que permite saber si el toggle esta en X (true) o en # (false) 
-  const [checked, setChecked] = React.useState(false);
   const handleChange = () => {
     setChecked(!checked);
   };
@@ -96,32 +80,29 @@ function Game() {
   if (!grid) {
     return null;
   }
-  const statusText = '';
  
   return (
     <div className="game">
-      <Board
-        grid={grid}
-        rowsClues={rowsClues}
-        colsClues={colsClues}
-        rowsCluesSat = {rowsCluesSat}
-        colsCluesSat = {colsCluesSat}
-        onClick={(i, j) => handleClick(i, j, checked)}
-      />
+      <div className="board-container">
+        <Board
+          grid={grid}
+          rowsClues={rowsClues}
+          colsClues={colsClues}
+          rowsCluesSat={rowsCluesSat}
+          colsCluesSat={colsCluesSat}
+          onClick={(i, j) => handleClick(i, j, checked)}
+        />
+      </div>
       <div className="game-info">
-        {statusText}
-        <div class="settings">
-            <label class="switch">
-              <input
-                type="checkbox"
-                checked={checked}
-                value={checked}
-                onChange={handleChange}
-              />
-              <span class="slider round"></span>
-            </label>
-            <p>Is "My Value" checked?</p>
-            <p>{checked.toString()}</p>
+        <div className="settings">
+          <label className="switch">
+            <input
+              type="checkbox"
+              checked={checked}
+              onChange={handleChange}
+            />
+            <span className="slider round"></span>
+          </label>
         </div>
       </div>
     </div>
