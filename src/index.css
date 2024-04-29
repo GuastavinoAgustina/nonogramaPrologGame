@@ -128,5 +128,9 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
+.clueSat {
+  background-color: #0d4d5c;
+  color: white; 
+}
 
 /* termina estilo toggle */

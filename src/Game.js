@@ -11,8 +11,8 @@ function Game() {
   const [rowsClues, setRowsClues] = useState(null);
   const [colsClues, setColsClues] = useState(null);
   const [waiting, setWaiting] = useState(false);
-  const [rowsSat, setRowsSat] = useState(false);
-  const [colsSat, setColsSat] = useState(false);
+  const [rowsCluesSat, setRowsCluesSat] = useState([]);
+  const [colsCluesSat, setColsCluesSat] = useState([]);
   
   useEffect(() => {
     // Creation of the pengine server instance.    
@@ -29,6 +29,8 @@ function Game() {
         setGrid(response['Grid']);
         setRowsClues(response['RowClues']);
         setColsClues(response['ColumClues']);
+        setRowsCluesSat(Array(response['RowClues'].length).fill(0));
+        setColsCluesSat(Array(response['ColumClues'].length).fill(0));
       }
     });
   }
@@ -57,16 +59,31 @@ function Game() {
     pengine.query(queryS, (success, response) => {
       if (success) {
         setGrid(response['ResGrid']);
-        setRowsSat(response['RowSat']);
-        setColsSat(response['ColSat']);
-        
+        rowsCluesSat[i] = response['RowSat'];
+        colsCluesSat[j] = response['ColSat'];
+
+        console.log(rowsCluesSat);
+        console.log(colsCluesSat);
+        console.log(rowsClues);
+    
+        /**if(response['RowSat']===1){
+          activeClue("row"+i)
+        }
+        if(response['RowSat']===0){
+          inactiveClue("row"+i)
+        }
+    
+        if(response['ColSat']===1){
+          activeClue("col"+j)
+        }
+        if(response['ColSat']===0){
+          inactiveClue("col"+j)
+        }**/
       }
       setWaiting(false);
     });
-    console.log(grid);
-    console.log(rowsSat);
-    console.log(colsSat);
-    //Utilizar las variables ResGrid, RowSat para cambiar la parte grafica una vez que en prolog se verifiquen las columnas y filas
+  
+    
 
   }
 
@@ -87,6 +104,8 @@ function Game() {
         grid={grid}
         rowsClues={rowsClues}
         colsClues={colsClues}
+        rowsCluesSat = {rowsCluesSat}
+        colsCluesSat = {colsCluesSat}
         onClick={(i, j) => handleClick(i, j, checked)}
       />
       <div className="game-info">
