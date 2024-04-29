@@ -18,7 +18,13 @@ body {
   padding: 0;
   text-align: center;
 }
-
+.square.relleno_negro {
+  background: #000;
+  color: transparent; 
+}
+.square.relleno_blanco {
+  background: #fff;
+}
 .board {
   display: grid;
 }
