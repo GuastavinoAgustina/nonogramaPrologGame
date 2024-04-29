@@ -29,10 +29,21 @@ function Game() {
         setGrid(response['Grid']);
         setRowsClues(response['RowClues']);
         setColsClues(response['ColumClues']);
-        setRowsCluesSat(Array(response['RowClues'].length).fill(0));
-        setColsCluesSat(Array(response['ColumClues'].length).fill(0));
+        const squaresS = JSON.stringify(response['Grid']).replaceAll('"_"', '_');
+        const rowsCluesS = JSON.stringify(response['RowClues']);
+        const colsCluesS = JSON.stringify(response['ColumClues']);
+        const cantCol = (response['ColumClues']).length;
+        const querySS = `tableroInicial( ${rowsCluesS}, ${colsCluesS}, ${squaresS}, ${cantCol}, RowsCluesSat, ColsCluesSat)`;
+        pengine.query(querySS, (success, response) => {
+          if (success) {
+            setRowsCluesSat(response['RowsCluesSat']);
+            setColsCluesSat(response['ColsCluesSat']);
+          }
+        });
       }
     });
+
+    
   }
 
   function handleClick(i, j, checked) {
@@ -49,7 +60,6 @@ function Game() {
     else{
       content = 'X';
     }
-     // Content to put in the clicked square.
     const rowsCluesS = JSON.stringify(rowsClues);
     const colsCluesS = JSON.stringify(colsClues);
     
@@ -61,10 +71,6 @@ function Game() {
         setGrid(response['ResGrid']);
         rowsCluesSat[i] = response['RowSat'];
         colsCluesSat[j] = response['ColSat'];
-
-        console.log(rowsCluesSat);
-        console.log(colsCluesSat);
-        console.log(rowsClues);
       }
       setWaiting(false);
     });

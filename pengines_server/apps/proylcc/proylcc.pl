@@ -1,8 +1,10 @@
 :- module(proylcc,
 	[  
-		put/8
-	]).
-
+		put/8,
+		tableroInicial/6
+	]
+	).
+	
 :-use_module(library(lists)).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -43,17 +45,37 @@ matchAux([Var|Xs],Y,Zs,SatAux):-
     matchAux(Xs,Yaux,Zs,SatAux).
 matchAux([_S|Xs],_Y,Xs,0).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TODAVIA NO LO USAMOS EN NINGUN LADO.
+% obtenerFila(+Grid, +RowN, RowsClues, -MyRow, -MyRowClues).
+%
+% MyCol es la ColN columna de Grid. 
+% MyColClues es el elemento en la posición ColN de ColsClues.
+
 obtenerFila([X|_Xs],0,[Y|_Ys],X,Y).
 obtenerFila([_X|Xs],RowN,[_Y|Ys],Ws,Zs):-
 	RowN > 0,
 	RowNs is RowN -1,
 	obtenerFila(Xs,RowNs,Ys,Ws,Zs).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% obtenerElemento(+Xs, +Index,-XsI).
+%
+% XsI es el elemento en la posición Index de Xs. 
+
 obtenerElemento([X|_Xs],0,X).
 obtenerElemento([_X|Xs],N,Ws):-
     N > 0,
 	Ns is N -1,
 	obtenerElemento(Xs,Ns,Ws).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% obtenerColumna(+Grid, +ColN, +ColsClues, -MyCol, -MyColClues).
+%
+% MyCol es la ColN columna de Grid. 
+% MyColClues es el elemento en la posición ColN de ColsClues.
 
 obtenerColumna([Xs],ColN,Ys,[Ws],Zs):- 
     obtenerElemento(Xs,ColN,Ws),
@@ -68,13 +90,10 @@ obtenerColumna([X|Xs],ColN,Ys,[W|Ws],Zs):-
 %
 
 put(Content,[RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat):-
-	% NewGrid is the result of replacing the row Row in position RowN of Grid by a new row NewRow (not yet instantiated).
+	
 	replace(Row, RowN, NewRow, Grid, NewGrid),
 
-	% NewRow is the result of replacing the cell Cell in position ColN of Row by _,
-	% if Cell matches Content (Cell is instantiated in the call to replace/5).	
-	% Otherwise (;)
-	% NewRow is the result of replacing the cell in position ColN of Row by Content (no matter its content: _Cell).			
+	
 	(replace(Cell, ColN, _, Row, NewRow),
 	Cell == Content
 		;
@@ -84,3 +103,21 @@ put(Content,[RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat):-
 	matchean(NewRow,MyRowClues,RowSat),
 	obtenerColumna(NewGrid,ColN,ColsClues,MyCol,MyColClues),
 	matchean(MyCol,MyColClues,ColSat).
+
+verificarRowsSat([Xs],[Ys],[Z]):- matchean(Xs,Ys,Z).
+verificarRowsSat([X|Xs],[Y|Ys],[Z|Zs]):- matchean(X,Y,Z), verificarRowsSat(Xs,Ys,Zs).
+
+verificarColsSat(Xs,ColX,0,Ys,[Z]):- 
+	obtenerColumna(Xs,ColX,Ys,W,M), 
+	matchean(W,M,Z).
+verificarColsSat(Xs,ColX,ColY,Ys,[Z|Zs]):- 
+	obtenerColumna(Xs,ColX,Ys,W,M), 
+	matchean(W,M,Z),
+	ColYS is ColY - 1,
+    ColXS is ColX + 1,
+	verificarColsSat(Xs,ColXS,ColYS,Ys,Zs).
+
+tableroInicial(RowsClues, ColsClues, Grid, CantCol, RowsCluesSat,ColsCluesSat):-
+    ColY is CantCol - 1,
+	verificarColsSat(Grid,0, ColY, ColsClues, ColsCluesSat),
+    verificarRowsSat(Grid, RowsClues, RowsCluesSat).
