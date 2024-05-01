@@ -1,7 +1,8 @@
 :- module(proylcc,
 	[  
 		put/8,
-		tableroInicial/6
+		tableroInicial/6,
+		checkGanador/3
 	]
 	).
 	
@@ -121,3 +122,20 @@ tableroInicial(RowsClues, ColsClues, Grid, CantCol, RowsCluesSat,ColsCluesSat):-
     ColY is CantCol - 1,
 	verificarColsSat(Grid,0, ColY, ColsClues, ColsCluesSat),
     verificarRowsSat(Grid, RowsClues, RowsCluesSat).
+
+sonUnos([Xs],Xs).
+sonUnos([X|Xs],G):-
+	X = 1,
+	sonUnos(Xs,G).
+sonUnos([_X|_Xs],0).
+
+
+hayGanador(GR,GC,1):-
+	GR = 1,
+	GC = 1.
+hayGanador(_GR,_GC,0).
+
+checkGanador(RowsCluesSat,ColsCluesSat,Ganador):-
+	sonUnos(RowsCluesSat,GR), 
+	sonUnos(ColsCluesSat,GC),
+	hayGanador(GR,GC,Ganador).

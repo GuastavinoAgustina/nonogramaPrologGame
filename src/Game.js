@@ -14,6 +14,7 @@ function Game() {
   const [rowsCluesSat, setRowsCluesSat] = useState([]);
   const [colsCluesSat, setColsCluesSat] = useState([]);
   const [checked, setChecked] = React.useState(true);
+  const [ganador, setGanador] = React.useState(false);
   useEffect(() => {
     // Creation of the pengine server instance.    
     // This is executed just once, after the first render.    
@@ -72,11 +73,18 @@ function Game() {
         rowsCluesSat[i] = response['RowSat'];
         colsCluesSat[j] = response['ColSat'];
       }
+      const rowsCluesSatS = JSON.stringify(rowsCluesSat);
+      const colsCluesSatS = JSON.stringify(colsCluesSat);
+      const queryG = `checkGanador(${rowsCluesSatS},${colsCluesSatS},Ganador)`;
+      pengine.query(queryG, (success, response) => {
+        if (success) {
+          setGanador(response['Ganador']);
+          console.log(response['Ganador']);
+        }
+      });
       setWaiting(false);
     });
-  
-    
-
+ 
   }
 
   const handleChange = () => {
@@ -96,6 +104,7 @@ function Game() {
           colsClues={colsClues}
           rowsCluesSat={rowsCluesSat}
           colsCluesSat={colsCluesSat}
+          ganador={ganador}
           onClick={(i, j) => handleClick(i, j, checked)}
         />
       </div>
