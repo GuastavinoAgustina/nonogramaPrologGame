@@ -14,6 +14,7 @@ function Game() {
   const [rowsCluesSat, setRowsCluesSat] = useState([]);
   const [colsCluesSat, setColsCluesSat] = useState([]);
   const [checked, setChecked] = React.useState(true);
+
   useEffect(() => {
     // Creation of the pengine server instance.    
     // This is executed just once, after the first render.    
@@ -74,9 +75,6 @@ function Game() {
       }
       setWaiting(false);
     });
-  
-    
-
   }
 
   const handleChange = () => {
@@ -111,6 +109,7 @@ function Game() {
           </label>
         </div>
       </div>
+      
     </div>
   );
 }

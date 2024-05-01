@@ -5,7 +5,25 @@ import Clue from './Clue';
 function Board({ grid, rowsClues, colsClues,rowsCluesSat,colsCluesSat, onClick }) {
     const numOfRows = grid.length;
     const numOfCols = grid[0].length;
+    let colsat = true;
+    let rowsat =true;
+    for (var i = 0; i < rowsCluesSat.length; i++) {
+        if(rowsCluesSat[i]===0){
+          colsat=false;
+          break;
+        }
+    }
+    for (var j = 0; j < colsCluesSat.length; j++) {
+        if(colsCluesSat[j]===0){
+            rowsat=false;
+            break;
+        }
+    }
     return (
+        <div>
+        <div className={((rowsat && colsat) ? "win-container" : "hide")}>
+            Ganaste!
+        </div>
         <div className="vertical">
             <div
                 className="colClues"
@@ -55,6 +73,7 @@ function Board({ grid, rowsClues, colsClues,rowsCluesSat,colsCluesSat, onClick }
                     )}
                 </div>
             </div>
+        </div>
         </div>
     );
 }

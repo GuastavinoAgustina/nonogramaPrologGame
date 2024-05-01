@@ -72,11 +72,6 @@ body {
   flex-direction: row;
 }
 
-.game-info {
-  margin-left: 30px;
-  display: flex;
-  align-items: center;
-}
 
 /* estilo toggle */
 
@@ -147,4 +142,17 @@ input:checked + .slider:before {
   margin-top: 20px; 
 }
 
+.win-container{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  font-family: roboto;
+  font-size: 5vmin;
+  margin:10px;
+}
+
+.hide{
+  display: none;
+}
 /* termina estilo toggle */
