@@ -21,19 +21,25 @@ replace(X, XIndex, Y, [Xi|Xs], [Xi|XsY]):-
     XIndexS is XIndex - 1,
     replace(X, XIndexS, Y, Xs, XsY).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% matchean(+Xs,+Ys,-LineSat).
+%
+% Xs es la lista de elementos de una linea.
+% Xy es la lista de pistas correspondientes a una linea.
 
 matchean([],[],1).
 matchean([],_Ys,0).
 matchean([Var|_XS],[],0):-Var == "#".
-matchean([_S|XS],[],RowSat):-matchean(XS,[],RowSat).
-matchean([Var|Xs],[Y|Ys],RowSat):- 
+matchean([_S|XS],[],LineSat):-matchean(XS,[],LineSat).
+matchean([Var|Xs],[Y|Ys],LineSat):- 
     Var == "#",
     Yaux is Y-1,
 	matchAux(Xs,Yaux,Zs,SatAux),
-	verif_resul(SatAux,Zs,Ys,RowSat).
-matchean([_S|Xs],Ys,RowSat):-matchean(Xs,Ys,RowSat).
+	verif_resul(SatAux,Zs,Ys,LineSat).
+matchean([_S|Xs],Ys,LineSat):-matchean(Xs,Ys,LineSat).
 
-verif_resul(1,Zs,Ys,RowSat):-matchean(Zs,Ys,RowSat).
+verif_resul(1,Zs,Ys,LineSat):-matchean(Zs,Ys,LineSat).
 verif_resul(0,_Zs,_Ys,0).
 
 matchAux([],0,[],1).
@@ -46,18 +52,6 @@ matchAux([Var|Xs],Y,Zs,SatAux):-
     matchAux(Xs,Yaux,Zs,SatAux).
 matchAux([_S|Xs],_Y,Xs,0).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% TODAVIA NO LO USAMOS EN NINGUN LADO.
-% obtenerFila(+Grid, +RowN, RowsClues, -MyRow, -MyRowClues).
-%
-% MyCol es la ColN columna de Grid. 
-% MyColClues es el elemento en la posición ColN de ColsClues.
-
-obtenerFila([X|_Xs],0,[Y|_Ys],X,Y).
-obtenerFila([_X|Xs],RowN,[_Y|Ys],Ws,Zs):-
-	RowN > 0,
-	RowNs is RowN -1,
-	obtenerFila(Xs,RowNs,Ys,Ws,Zs).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -105,8 +99,24 @@ put(Content,[RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat):-
 	obtenerColumna(NewGrid,ColN,ColsClues,MyCol,MyColClues),
 	matchean(MyCol,MyColClues,ColSat).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% verificarRowsSat(+Xs,+Ys,-Z).
+%
+% Xs es el grilla del tablero
+% Ys es la lista de pistas correspondientes a las filas.
+
 verificarRowsSat([Xs],[Ys],[Z]):- matchean(Xs,Ys,Z).
 verificarRowsSat([X|Xs],[Y|Ys],[Z|Zs]):- matchean(X,Y,Z), verificarRowsSat(Xs,Ys,Zs).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% verificarColsSat(+Xs,+ColX,+ColY,+Ys,-Z). 
+%
+% Xs es el grilla del tablero.
+% ColX es el numero de columna.
+% ColY es la cantidad de columnas del tablero.
+% Ys es la lista de pistas correspondientes a las columnas.
 
 verificarColsSat(Xs,ColX,0,Ys,[Z]):- 
 	obtenerColumna(Xs,ColX,Ys,W,M), 
@@ -118,6 +128,10 @@ verificarColsSat(Xs,ColX,ColY,Ys,[Z|Zs]):-
     ColXS is ColX + 1,
 	verificarColsSat(Xs,ColXS,ColYS,Ys,Zs).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% tableroInicial(+RowsClues, +ColsClues, +Grid, +CantCol, -RowsCluesSat,-ColsCluesSat).
+%
 tableroInicial(RowsClues, ColsClues, Grid, CantCol, RowsCluesSat,ColsCluesSat):-
     ColY is CantCol - 1,
 	verificarColsSat(Grid,0, ColY, ColsClues, ColsCluesSat),
@@ -129,11 +143,24 @@ sonUnos([X|Xs],G):-
 	sonUnos(Xs,G).
 sonUnos([_X|_Xs],0).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% hayGanador(+GR,+GC,-Ganador).
+%
+% GR es 1 y todas las pistas de filas del tablero fueron satifechas.
+% GC es 1 y todas las pistas de columnas del tablero fueron satifechas.
 
 hayGanador(GR,GC,1):-
 	GR = 1,
 	GC = 1.
 hayGanador(_GR,_GC,0).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% checkGanador(+RowsCluesSat,+ColsCluesSat,-Ganador).
+%
+% RowsCluesSat es la lista de estado de las pistas de las filas. 
+% ColsCluesSat es la lista de estado de las pistas de las columnas. 
 
 checkGanador(RowsCluesSat,ColsCluesSat,Ganador):-
 	sonUnos(RowsCluesSat,GR), 
