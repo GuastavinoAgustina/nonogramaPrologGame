@@ -79,7 +79,6 @@ function Game() {
       pengine.query(queryG, (success, response) => {
         if (success) {
           setGanador(response['Ganador']);
-          console.log(response['Ganador']);
         }
       });
       setWaiting(false);
@@ -110,11 +109,12 @@ function Game() {
       </div>
       <div className="game-info">
         <div className="settings">
-          <label className="switch">
+          <label className="switch" >
             <input
               type="checkbox"
               checked={checked}
               onChange={handleChange}
+              disabled = {ganador}
             />
             <span className="slider round"></span>
           </label>

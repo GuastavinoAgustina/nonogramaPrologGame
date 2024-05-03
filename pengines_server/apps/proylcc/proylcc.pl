@@ -37,7 +37,7 @@ matchean([Var|Xs],[Y|Ys],LineSat):-
     Yaux is Y-1,
 	matchAux(Xs,Yaux,Zs,SatAux),
 	verif_resul(SatAux,Zs,Ys,LineSat).
-matchean([_S|Xs],Ys,LineSat):-matchean(Xs,Ys,LineSat).
+matchean([_S|Xs],Ys,LineSat):-matchean(Xs,Ys,LineSat). 	
 
 verif_resul(1,Zs,Ys,LineSat):-matchean(Zs,Ys,LineSat).
 verif_resul(0,_Zs,_Ys,0).

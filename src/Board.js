@@ -8,7 +8,7 @@ function Board({ grid, rowsClues, colsClues,rowsCluesSat,colsCluesSat,ganador, o
     return (
         <div>
             <div className={((ganador===1) ? "win-container" : "hide")}>
-                Ganaste!
+                ¡Ganaste!
             </div>
             <div className="vertical">
                 <div
@@ -54,6 +54,7 @@ function Board({ grid, rowsClues, colsClues,rowsCluesSat,colsCluesSat,ganador, o
                                     value={cell}
                                     onClick={() => onClick(i, j)}
                                     key={i + j}
+                                    disabled={ganador === 1}
                                 />
                             )
                         )}
