@@ -166,3 +166,67 @@ checkGanador(RowsCluesSat,ColsCluesSat,Ganador):-
 	sonUnos(RowsCluesSat,GR), 
 	sonUnos(ColsCluesSat,GC),
 	hayGanador(GR,GC,Ganador).
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% generarFila(+Clues, +Len, -Fila)
+%
+% Genera una fila válida para una lista de pistas.
+%
+generarFila([], 0, []).
+generarFila([], Len, Fila) :-
+    Len > 0,
+    Fila = [' '| Resto],
+    Len1 is Len - 1,
+    generarFila([], Len1, Resto).
+generarFila([C|Clues], Len, Fila) :-
+    C > 0,
+    C =< Len,
+    append(['#'], L1, L2),
+    generarFila([C1|Clues], RestoLen, L2),
+    RestoLen is Len - C - 1,
+    L1 = ['#'|Pre],
+    maplist(=(#), Pre),
+    append(Pre, L1, Fila).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% generarFilas(+RowsClues, +Len, -Filas)
+%
+% Genera todas las filas válidas para una lista de pistas de filas.
+%
+generarFilas([], _, []).
+generarFilas([Clue|Clues], Len, [Fila|Filas]) :-
+    generarFila(Clue, Len, Fila),
+    generarFilas(Clues, Len, Filas).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% esSolucion(+Filas, +RowsClues, +ColsClues)
+%
+% Verifica si la disposición dada de filas es una solución válida.
+%
+esSolucion(Filas, RowsClues, ColsClues) :-
+    verificarRowsSat(Filas, RowsClues, RowsCluesSat),
+    verificarColsSat(Filas, 0, LenCols, ColsClues, ColsCluesSat),
+    sonUnos(RowsCluesSat, 1),
+    sonUnos(ColsCluesSat, 1).
+
+generarFilasSatisfactorias(X,Y,Z)
+
+generarCombinacionesFilas([X],[Y],[Combinatoria]):-findall(Z ,generarFilasSatisfactorias(X,Y,Z), Combinatoria)
+
+generarCombinacionesFilas(InitGrid,RowsClues,Combinatoria) :-
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% resolverNonograma(+RowsClues, +ColsClues, -Solucion)
+%
+% Genera la solución del nonograma para las pistas dadas.
+%
+resolverNonograma(InitGrid, RowsClues, ColsClues, Solucion) :-
+    generarCombinacionesFilas(InitGrid,RowsClues,Combinatoria),
