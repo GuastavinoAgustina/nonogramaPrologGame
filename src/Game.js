@@ -15,6 +15,7 @@ function Game() {
   const [colsCluesSat, setColsCluesSat] = useState([]);
   const [checked, setChecked] = React.useState(true);
   const [ganador, setGanador] = React.useState(false);
+  const [solucion, setSolucion] = useState(null);
   useEffect(() => {
     // Creation of the pengine server instance.    
     // This is executed just once, after the first render.    
@@ -24,26 +25,27 @@ function Game() {
 
   function handleServerReady(instance) {
     pengine = instance;
-    const queryS = 'init(RowClues, ColumClues, Grid)';
+    const queryS = 'init(RowClues, ColumClues, Grid), tableroInicial(RowClues, ColumClues, Grid, RowsCluesSat, ColsCluesSat)';
     pengine.query(queryS, (success, response) => {
       if (success) {
         setGrid(response['Grid']);
         setRowsClues(response['RowClues']);
         setColsClues(response['ColumClues']);
-        const squaresS = JSON.stringify(response['Grid']).replaceAll('"_"', '_');
+        setRowsCluesSat(response['RowsCluesSat']);
+        setColsCluesSat(response['ColsCluesSat']);
+        const squaresS = JSON.stringify(response['Grid']);
         const rowsCluesS = JSON.stringify(response['RowClues']);
         const colsCluesS = JSON.stringify(response['ColumClues']);
-        const cantCol = (response['ColumClues']).length;
-        const querySS = `tableroInicial( ${rowsCluesS}, ${colsCluesS}, ${squaresS}, ${cantCol}, RowsCluesSat, ColsCluesSat)`;
+        const querySS = `resolverNonograma(${squaresS},${rowsCluesS}, ${colsCluesS},Solucion)`;
         pengine.query(querySS, (success, response) => {
           if (success) {
-            setRowsCluesSat(response['RowsCluesSat']);
-            setColsCluesSat(response['ColsCluesSat']);
+            setSolucion(response['Solucion']);
+            console.log(response['Solucion']);
           }
-        });
+      });
+      
       }
     });
-
     
   }
 

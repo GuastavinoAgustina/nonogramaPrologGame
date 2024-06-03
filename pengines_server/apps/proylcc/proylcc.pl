@@ -1,13 +1,14 @@
 :- module(proylcc,
 	[  
 		put/8,
-		tableroInicial/6,
-		checkGanador/3
+		tableroInicial/5,
+		checkGanador/3,
+        resolverNonograma/4
 	]
 	).
 	
 :-use_module(library(lists)).
-
+:- use_module(library(clpfd)).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % replace(?X, +XIndex, +Y, +Xs, -XsY)
@@ -101,41 +102,24 @@ put(Content,[RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat):-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% verificarRowsSat(+Xs,+Ys,-Z).
+% verificarLineSat(+Xs,+Ys,-Z).
 %
-% Xs es el grilla del tablero
-% Ys es la lista de pistas correspondientes a las filas.
+% Xs es la grilla del tablero
+% Ys es la lista de pistas correspondientes a las lineas.
 
-verificarRowsSat([Xs],[Ys],[Z]):- matchean(Xs,Ys,Z).
-verificarRowsSat([X|Xs],[Y|Ys],[Z|Zs]):- matchean(X,Y,Z), verificarRowsSat(Xs,Ys,Zs).
+verificarLineSat([Xs],[Ys],[Z]):- matchean(Xs,Ys,Z).
+verificarLineSat([X|Xs],[Y|Ys],[Z|Zs]):- matchean(X,Y,Z), verificarLineSat(Xs,Ys,Zs).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% verificarColsSat(+Xs,+ColX,+ColY,+Ys,-Z). 
-%
-% Xs es el grilla del tablero.
-% ColX es el numero de columna.
-% ColY es la cantidad de columnas del tablero.
-% Ys es la lista de pistas correspondientes a las columnas.
 
-verificarColsSat(Xs,ColX,0,Ys,[Z]):- 
-	obtenerColumna(Xs,ColX,Ys,W,M), 
-	matchean(W,M,Z).
-verificarColsSat(Xs,ColX,ColY,Ys,[Z|Zs]):- 
-	obtenerColumna(Xs,ColX,Ys,W,M), 
-	matchean(W,M,Z),
-	ColYS is ColY - 1,
-    ColXS is ColX + 1,
-	verificarColsSat(Xs,ColXS,ColYS,Ys,Zs).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % tableroInicial(+RowsClues, +ColsClues, +Grid, +CantCol, -RowsCluesSat,-ColsCluesSat).
 %
-tableroInicial(RowsClues, ColsClues, Grid, CantCol, RowsCluesSat,ColsCluesSat):-
-    ColY is CantCol - 1,
-	verificarColsSat(Grid,0, ColY, ColsClues, ColsCluesSat),
-    verificarRowsSat(Grid, RowsClues, RowsCluesSat).
+tableroInicial(RowsClues, ColsClues, Grid, RowsCluesSat,ColsCluesSat):-
+    transpose(Grid, TransposeGrid),
+	verificarLineSat(TransposeGrid, ColsClues, ColsCluesSat),
+    verificarLineSat(Grid, RowsClues, RowsCluesSat).
 
 sonUnos([Xs],Xs).
 sonUnos([X|Xs],G):-
@@ -169,58 +153,57 @@ checkGanador(RowsCluesSat,ColsCluesSat,Ganador):-
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% generarFila(+Clues, +Len, -Fila)
-%
-% Genera una fila válida para una lista de pistas.
-%
-generarFila([], 0, []).
-generarFila([], Len, Fila) :-
-    Len > 0,
-    Fila = [' '| Resto],
-    Len1 is Len - 1,
-    generarFila([], Len1, Resto).
-generarFila([C|Clues], Len, Fila) :-
-    C > 0,
-    C =< Len,
-    append(['#'], L1, L2),
-    generarFila([C1|Clues], RestoLen, L2),
-    RestoLen is Len - C - 1,
-    L1 = ['#'|Pre],
-    maplist(=(#), Pre),
-    append(Pre, L1, Fila).
+%generarFilasSatisfactorias(X,Y,Z)
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% generarFilas(+RowsClues, +Len, -Filas)
-%
-% Genera todas las filas válidas para una lista de pistas de filas.
-%
-generarFilas([], _, []).
-generarFilas([Clue|Clues], Len, [Fila|Filas]) :-
-    generarFila(Clue, Len, Fila),
-    generarFilas(Clues, Len, Filas).
+genFilaSat([],[],[]):-!.
+genFilaSat([],_Ys,_Zs):-!,fail.
+genFilaSat([_X|Xs],[],["X"|Zs]):- genFilaSat(Xs,[],Zs),!.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% esSolucion(+Filas, +RowsClues, +ColsClues)
-%
-% Verifica si la disposición dada de filas es una solución válida.
-%
-esSolucion(Filas, RowsClues, ColsClues) :-
-    verificarRowsSat(Filas, RowsClues, RowsCluesSat),
-    verificarColsSat(Filas, 0, LenCols, ColsClues, ColsCluesSat),
-    sonUnos(RowsCluesSat, 1),
-    sonUnos(ColsCluesSat, 1).
+genFilaSat([X|Xs],[Y|Ys],Zs):- X=="#", !,  
+    pintar([X|Xs],Y,Vs,Ws,Sat), 
+    Sat==1,
+    genFilaSat(Ws,Ys,Us),
+    concat(Vs,Us,Zs).
+genFilaSat([X|Xs],Ys,["X"|Zs]):- X == "X", !, genFilaSat(Xs,Ys,Zs).
+genFilaSat(Xs,[Y|Ys],Zs):-pintar(Xs,Y,Vs,Ws,Sat),
+    Sat==1,
+    genFilaSat(Ws,Ys,Us),
+    concat(Vs,Us,Zs).
+genFilaSat([_X|Xs],Ys,["X"|Zs]):-genFilaSat(Xs,Ys,Zs).
 
-generarFilasSatisfactorias(X,Y,Z)
+pintar([],0,[],[],1):-!.
+pintar([],_Y,_Xs,_Ys,_Sat):-fail.
+pintar([Var|Xs],0,["#"],Xs,0):- Var == "#", !,fail.
+pintar([_X|Xs],0,["X"],Xs,1):-!.
+pintar([_X|Xs],Y,["#"|Ws],Zs,Sat):- YAux is Y-1, 
+    pintar(Xs,YAux,Ws,Zs,Sat).
 
-generarCombinacionesFilas([X],[Y],[Combinatoria]):-findall(Z ,generarFilasSatisfactorias(X,Y,Z), Combinatoria)
+concat([],Ys,Ys).
+concat([X|Xs],Ys,[X|Zs]):-concat(Xs,Ys,Zs).
 
-generarCombinacionesFilas(InitGrid,RowsClues,Combinatoria) :-
+generarCombinacionesFilas([],[],[]).
+generarCombinacionesFilas([X|Xs],[Y|Ys],[Z|Zs]):-findall(Fila,genFilaSat(X,Y,Fila),Z),
+    generarCombinacionesFilas(Xs,Ys,Zs).
 
+generarGrilla([],[]).
+generarGrilla([X|Xs],[K|Ys]):-
+    X = [K|_Ks],
+    generarGrilla(Xs,Ys).
+generarGrilla([X|Xs],Ys):-
+    X = [_K|Ks],
+    generarGrilla([Ks|Xs],Ys).
 
+generarGrillaCorrecta(Xs,ColsClues,Zs):-
+    findall(Ys,generarGrilla(Xs,Ys),PosiblesGrillas),
+    encontrarCorrecta(PosiblesGrillas,ColsClues,Zs).
+    
+encontrarCorrecta([X|_Xs],ColsClues,X):-
+    transpose(X,XTranspuesta),
+    verificarLineSat(XTranspuesta, ColsClues, ColsCluesSat),
+    sonUnos(ColsCluesSat,Sat),
+	Sat == 1.
+encontrarCorrecta([_X|Xs],ColsClues,Zs):-
+    encontrarCorrecta(Xs,ColsClues,Zs).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -230,3 +213,4 @@ generarCombinacionesFilas(InitGrid,RowsClues,Combinatoria) :-
 %
 resolverNonograma(InitGrid, RowsClues, ColsClues, Solucion) :-
     generarCombinacionesFilas(InitGrid,RowsClues,Combinatoria),
+    generarGrillaCorrecta(Combinatoria,ColsClues,Solucion).
