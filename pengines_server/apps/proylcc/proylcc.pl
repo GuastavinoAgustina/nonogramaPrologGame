@@ -3,11 +3,12 @@
 		put/8,
 		tableroInicial/5,
 		checkGanador/3,
-        resolverNonograma/4
+        resolverNonograma/6
 	]
 	).
 	
-:-use_module(library(lists)).
+	
+    :-use_module(library(lists)).
 :- use_module(library(clpfd)).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -155,21 +156,21 @@ checkGanador(RowsCluesSat,ColsCluesSat,Ganador):-
 
 %generarFilasSatisfactorias(X,Y,Z)
 
-genFilaSat([],[],[]):-!.
-genFilaSat([],_Ys,_Zs):-!,fail.
-genFilaSat([_X|Xs],[],["X"|Zs]):- genFilaSat(Xs,[],Zs),!.
+genLineaSat([],[],[]):-!.
+genLineaSat([],_Ys,_Zs):-!,fail.
+genLineaSat([_X|Xs],[],["X"|Zs]):- genLineaSat(Xs,[],Zs),!.
 
-genFilaSat([X|Xs],[Y|Ys],Zs):- X=="#", !,  
+genLineaSat([X|Xs],[Y|Ys],Zs):- X=="#", !,  
     pintar([X|Xs],Y,Vs,Ws,Sat), 
     Sat==1,
-    genFilaSat(Ws,Ys,Us),
+    genLineaSat(Ws,Ys,Us),
     concat(Vs,Us,Zs).
-genFilaSat([X|Xs],Ys,["X"|Zs]):- X == "X", !, genFilaSat(Xs,Ys,Zs).
-genFilaSat(Xs,[Y|Ys],Zs):-pintar(Xs,Y,Vs,Ws,Sat),
+genLineaSat([X|Xs],Ys,["X"|Zs]):- X == "X", !, genLineaSat(Xs,Ys,Zs).
+genLineaSat(Xs,[Y|Ys],Zs):-pintar(Xs,Y,Vs,Ws,Sat),
     Sat==1,
-    genFilaSat(Ws,Ys,Us),
+    genLineaSat(Ws,Ys,Us),
     concat(Vs,Us,Zs).
-genFilaSat([_X|Xs],Ys,["X"|Zs]):-genFilaSat(Xs,Ys,Zs).
+genLineaSat([_X|Xs],Ys,["X"|Zs]):-genLineaSat(Xs,Ys,Zs).
 
 pintar([],0,[],[],1):-!.
 pintar([],_Y,_Xs,_Ys,_Sat):-fail.
@@ -181,9 +182,37 @@ pintar([_X|Xs],Y,["#"|Ws],Zs,Sat):- YAux is Y-1,
 concat([],Ys,Ys).
 concat([X|Xs],Ys,[X|Zs]):-concat(Xs,Ys,Zs).
 
-generarCombinacionesFilas([],[],[]).
-generarCombinacionesFilas([X|Xs],[Y|Ys],[Z|Zs]):-findall(Fila,genFilaSat(X,Y,Fila),Z),
-    generarCombinacionesFilas(Xs,Ys,Zs).
+coincidencias([],[]).
+coincidencias([Z],Z).
+coincidencias([Z|Zs],U):-
+    Zs = [Y|Ys],
+    coincidenciasAux(Z,Y,W),
+    coincidencias(Ys,V),
+    coincidenciasAux(W,V,U).
+
+coincidenciasAux(Zs,[],Zs).
+coincidenciasAux([Z|Zs],[Y|Ys],[Y|P]):-
+    Z == Y,
+	coincidenciasAux(Zs,Ys,P).
+coincidenciasAux([_Z|Zs],[_Y|Ys],[_|P]):-
+    coincidenciasAux(Zs,Ys,P).
+
+verificarCompletitud([],1).
+verificarCompletitud([X|Xs],0):-
+    X\=="#", X\=="X".
+	
+verificarCompletitud([X|Xs],Sat):-
+    verificarCompletitud(Xs,Sat).
+
+generarCombinaciones([],[],[],[],[]).
+generarCombinaciones([X|Xs],[Y|Ys],[W|Ws],[Sat|Vs],[LineaCoincidente|Zs]):-
+    W==0,
+    findall(Linea,genLineaSat(X,Y,Linea),Z),
+    coincidencias(Z,LineaCoincidente),
+    verificarCompletitud(LineaCoincidente,Sat),
+    generarCombinaciones(Xs,Ys,Ws,Vs,Zs).
+generarCombinaciones([X|Xs],[Y|Ys],[W|Ws],[W|Vs],[X|Zs]):-
+    generarCombinaciones(Xs,Ys,Ws,Vs,Zs).
 
 generarGrilla([],[]).
 generarGrilla([X|Xs],[K|Ys]):-
@@ -205,12 +234,23 @@ encontrarCorrecta([X|_Xs],ColsClues,X):-
 encontrarCorrecta([_X|Xs],ColsClues,Zs):-
     encontrarCorrecta(Xs,ColsClues,Zs).
 
+generarCombinacionesRec(InitGrid, RowsClues, ColsClues, RowsCluesSat, ColsCluesSat, InitGrid):-
+    checkGanador(RowsCluesSat,ColsCluesSat,Ganador),
+    Ganador == 1.
+generarCombinacionesRec(InitGrid, RowsClues, ColsClues, RowsCluesSat, ColsCluesSat, Solucion):-
+    generarCombinaciones(InitGrid,RowsClues,RowsCluesSat, NewRowsCluesSat, NuevaGrilla),
+    transpose(NuevaGrilla, GrillaTranspuesta),
+    generarCombinaciones(GrillaTranspuesta,ColsClues,ColsCluesSat, NewColsCluesSat, NuevaNuevaGrilla),
+    transpose(NuevaNuevaGrilla, Grilla),
+    generarCombinacionesRec(Grilla, RowsClues, ColsClues, NewRowsCluesSat, NewColsCluesSat, Solucion).
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % resolverNonograma(+RowsClues, +ColsClues, -Solucion)
 %
 % Genera la solución del nonograma para las pistas dadas.
 %
-resolverNonograma(InitGrid, RowsClues, ColsClues, Solucion) :-
-    generarCombinacionesFilas(InitGrid,RowsClues,Combinatoria),
-    generarGrillaCorrecta(Combinatoria,ColsClues,Solucion).
+resolverNonograma(InitGrid, RowsClues, ColsClues, RowsCluesSat, ColsCluesSat, Solucion) :-
+    generarCombinacionesRec(InitGrid, RowsClues, ColsClues, RowsCluesSat, ColsCluesSat, Solucion).
+
