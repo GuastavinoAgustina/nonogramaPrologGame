@@ -3,7 +3,7 @@
 		put/8,
 		tableroInicial/5,
 		checkGanador/3,
-        resolverNonograma/6
+        resolverNonograma/4
 	]
 	).
 	
@@ -158,8 +158,8 @@ checkGanador(RowsCluesSat,ColsCluesSat,Ganador):-
 
 genLineaSat([],[],[]):-!.
 genLineaSat([],_Ys,_Zs):-!,fail.
+genLineaSat([X|_Xs],[],_Zs):- X=="#", !, fail. 
 genLineaSat([_X|Xs],[],["X"|Zs]):- genLineaSat(Xs,[],Zs),!.
-
 genLineaSat([X|Xs],[Y|Ys],Zs):- X=="#", !,  
     pintar([X|Xs],Y,Vs,Ws,Sat), 
     Sat==1,
@@ -175,7 +175,8 @@ genLineaSat([_X|Xs],Ys,["X"|Zs]):-genLineaSat(Xs,Ys,Zs).
 pintar([],0,[],[],1):-!.
 pintar([],_Y,_Xs,_Ys,_Sat):-fail.
 pintar([Var|Xs],0,["#"],Xs,0):- Var == "#", !,fail.
-pintar([_X|Xs],0,["X"],Xs,1):-!.
+pintar([_X|Xs],0,["X"],Xs,1).
+pintar([Var|_Xs],_Y,_,_,0):- Var == "X",!,fail.
 pintar([_X|Xs],Y,["#"|Ws],Zs,Sat):- YAux is Y-1, 
     pintar(Xs,YAux,Ws,Zs,Sat).
 
@@ -198,10 +199,10 @@ coincidenciasAux([_Z|Zs],[_Y|Ys],[_|P]):-
     coincidenciasAux(Zs,Ys,P).
 
 verificarCompletitud([],1).
-verificarCompletitud([X|Xs],0):-
+verificarCompletitud([X|_Xs],0):-
     X\=="#", X\=="X".
 	
-verificarCompletitud([X|Xs],Sat):-
+verificarCompletitud([_X|Xs],Sat):-
     verificarCompletitud(Xs,Sat).
 
 generarCombinaciones([],[],[],[],[]).
@@ -211,7 +212,7 @@ generarCombinaciones([X|Xs],[Y|Ys],[W|Ws],[Sat|Vs],[LineaCoincidente|Zs]):-
     coincidencias(Z,LineaCoincidente),
     verificarCompletitud(LineaCoincidente,Sat),
     generarCombinaciones(Xs,Ys,Ws,Vs,Zs).
-generarCombinaciones([X|Xs],[Y|Ys],[W|Ws],[W|Vs],[X|Zs]):-
+generarCombinaciones([X|Xs],[_Y|Ys],[W|Ws],[W|Vs],[X|Zs]):-
     generarCombinaciones(Xs,Ys,Ws,Vs,Zs).
 
 generarGrilla([],[]).
@@ -234,7 +235,7 @@ encontrarCorrecta([X|_Xs],ColsClues,X):-
 encontrarCorrecta([_X|Xs],ColsClues,Zs):-
     encontrarCorrecta(Xs,ColsClues,Zs).
 
-generarCombinacionesRec(InitGrid, RowsClues, ColsClues, RowsCluesSat, ColsCluesSat, InitGrid):-
+generarCombinacionesRec(InitGrid, _RowsClues, _ColsClues, RowsCluesSat, ColsCluesSat, InitGrid):-
     checkGanador(RowsCluesSat,ColsCluesSat,Ganador),
     Ganador == 1.
 generarCombinacionesRec(InitGrid, RowsClues, ColsClues, RowsCluesSat, ColsCluesSat, Solucion):-
@@ -244,6 +245,9 @@ generarCombinacionesRec(InitGrid, RowsClues, ColsClues, RowsCluesSat, ColsCluesS
     transpose(NuevaNuevaGrilla, Grilla),
     generarCombinacionesRec(Grilla, RowsClues, ColsClues, NewRowsCluesSat, NewColsCluesSat, Solucion).
 
+generarCeros([],[]).
+generarCeros([_X|Xs],[0|Ys]):-
+    generarCeros(Xs,Ys).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -251,6 +255,10 @@ generarCombinacionesRec(InitGrid, RowsClues, ColsClues, RowsCluesSat, ColsCluesS
 %
 % Genera la solución del nonograma para las pistas dadas.
 %
-resolverNonograma(InitGrid, RowsClues, ColsClues, RowsCluesSat, ColsCluesSat, Solucion) :-
+resolverNonograma(InitGrid, RowsClues, ColsClues, Solucion) :-
+    InitGrid = [X|_Xs],
+    generarCeros(X,RowsCluesSat),
+    transpose(InitGrid,InitGridTranpose),
+    generarCeros(InitGridTranpose,ColsCluesSat),
     generarCombinacionesRec(InitGrid, RowsClues, ColsClues, RowsCluesSat, ColsCluesSat, Solucion).
 

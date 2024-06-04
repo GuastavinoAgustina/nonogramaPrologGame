@@ -36,9 +36,7 @@ function Game() {
         const squaresS = JSON.stringify(response['Grid']);
         const rowsCluesS = JSON.stringify(response['RowClues']);
         const colsCluesS = JSON.stringify(response['ColumClues']);
-        const rowsCluesSS = JSON.stringify(response['RowsCluesSat']);
-        const colsCluesSS = JSON.stringify(response['ColsCluesSat']);
-        const querySS = `resolverNonograma(${squaresS},${rowsCluesS}, ${colsCluesS},${rowsCluesSS}, ${colsCluesSS},Solucion)`;
+        const querySS = `resolverNonograma(${squaresS},${rowsCluesS}, ${colsCluesS},Solucion)`;
         pengine.query(querySS, (success, response) => {
           if (success) {
             setSolucion(response['Solucion']);
