@@ -4,11 +4,9 @@ import Board from './Board';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLightbulb } from '@fortawesome/free-solid-svg-icons';
 
-
 let pengine;
 
 function Game() {
-
   // State
   const [grid, setGrid] = useState(null);
   const [rowsClues, setRowsClues] = useState(null);
@@ -16,14 +14,14 @@ function Game() {
   const [waiting, setWaiting] = useState(false);
   const [rowsCluesSat, setRowsCluesSat] = useState([]);
   const [colsCluesSat, setColsCluesSat] = useState([]);
-  const [checked, setChecked] = React.useState(true);
-  const [clueActive, setClueActive] = useState(false); // Nuevo estado
-  const [ganador, setGanador] = React.useState(false);
+  const [checked, setChecked] = useState(true);
+  const [clueActive, setClueActive] = useState(false);
+  const [ganador, setGanador] = useState(false);
   const [solucion, setSolucion] = useState(null);
+  const [showSolution, setShowSolution] = useState(false); // Nuevo estado
+
   useEffect(() => {
-    // Creation of the pengine server instance.    
-    // This is executed just once, after the first render.    
-    // The callback will run when the server is ready, and it stores the pengine instance in the pengine variable. 
+    // Creación de la instancia del servidor Pengine.
     PengineClient.init(handleServerReady);
   }, []);
 
@@ -46,33 +44,22 @@ function Game() {
             setSolucion(response['Solucion']);
             console.log(response['Solucion']);
           }
-      });
-      
+        });
       }
     });
-    
   }
 
   function handleClick(i, j, checked) {
-    // No action on click if we are waiting.
-    if (waiting) {
-      return;
-    }
-    // Build Prolog query to make a move and get the new satisfacion status of the relevant clues.    
-    const squaresS = JSON.stringify(grid).replaceAll('"_"', '_'); // Remove quotes for variables. squares = [["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]]
-    let content; // Content to put in the clicked square.
-    if (checked){
-      content = '#';
-    }
-    else{
-      content = 'X';
-    }
+    if (waiting || showSolution) return; // No permitir cambios si se está mostrando la solución
+
+    const squaresS = JSON.stringify(grid).replaceAll('"_"', '_');
+    let content = checked ? '#' : 'X';
     const rowsCluesS = JSON.stringify(rowsClues);
     const colsCluesS = JSON.stringify(colsClues);
-    
-    const queryS = `put("${content}", [${i},${j}], ${rowsCluesS}, ${colsCluesS}, ${squaresS}, ResGrid, RowSat, ColSat)`; // queryS = put("#",[0,1],[], [],[["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
+
+    const queryS = `put("${content}", [${i},${j}], ${rowsCluesS}, ${colsCluesS}, ${squaresS}, ResGrid, RowSat, ColSat)`;
     setWaiting(true);
-    
+
     pengine.query(queryS, (success, response) => {
       if (success) {
         setGrid(response['ResGrid']);
@@ -89,22 +76,25 @@ function Game() {
       });
       setWaiting(false);
     });
- 
   }
 
   const handleChange = () => {
     setChecked(!checked);
   };
 
+  const toggleSolution = () => {
+    setShowSolution(!showSolution);
+  };
+
   if (!grid) {
     return null;
   }
- 
+
   return (
     <div className="game">
       <div className="board-container">
         <Board
-          grid={grid}
+          grid={showSolution ? solucion : grid}
           rowsClues={rowsClues}
           colsClues={colsClues}
           rowsCluesSat={rowsCluesSat}
@@ -113,31 +103,34 @@ function Game() {
           onClick={(i, j) => handleClick(i, j, checked)}
         />
       </div>
+      
       <div className="game-info">
         <div className="settings">
-          <label  className="solucion">
+          <label className="solucion">
             <input
               type="checkbox"
+              checked={showSolution}
+              onChange={toggleSolution}
             />
             <span className="solucionSwitch">
               Solución
             </span>
           </label>
-          <label className="switch" >
+          <label className="switch">
             <input
               type="checkbox"
               checked={checked}
               onChange={handleChange}
-              disabled = {ganador}
+              disabled={ganador}
             />
             <span className="slider round"></span>
           </label>
-          <label  className="clueLabel">
+          <label className="clueLabel">
             <input
               type="checkbox"
             />
             <span className="clueSwitch">
-            <FontAwesomeIcon icon={faLightbulb} className="lightbulb-icon" />
+              <FontAwesomeIcon icon={faLightbulb} className="lightbulb-icon" />
             </span>
           </label>
         </div>
