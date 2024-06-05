@@ -160,3 +160,64 @@ input:checked + .slider:before {
   display: none;
 }
 /* termina estilo toggle */
+
+.lightbulb-icon {
+  color: black;
+  font-size: 24px;
+}
+.clueLabel{
+  margin: 0;
+  padding: 0;
+}
+.clueLabel input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.clueSwitch{
+  width: 40px;
+  height: 40px;
+  display: inline-flex; /* you can also use 'grid' or just 'flex'*/
+  justify-content: center;
+  align-items: center;
+  background:#b9d6e0;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.settings {
+  width: 250px;
+  height: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+input:checked + .clueSwitch{
+  background-color: #000;
+}
+input:checked + .clueSwitch .lightbulb-icon{
+  color: #b9d6e0;
+}
+.solucion input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.solucionSwitch {
+  width: 80px;
+  height: 40px;
+  display: inline-flex; /* you can also use 'grid' or just 'flex'*/
+  justify-content: center;
+  align-items: center;
+  background:#b9d6e0;
+  border-radius: 10%;
+  cursor: pointer;
+  font-weight: bold;
+  margin-right: 7px;
+}
+
+input:checked + .solucionSwitch{
+  background: black;
+  color: #b9d6e0;
+}

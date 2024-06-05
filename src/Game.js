@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import PengineClient from './PengineClient';
 import Board from './Board';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLightbulb } from '@fortawesome/free-solid-svg-icons';
+
 
 let pengine;
 
@@ -14,6 +17,7 @@ function Game() {
   const [rowsCluesSat, setRowsCluesSat] = useState([]);
   const [colsCluesSat, setColsCluesSat] = useState([]);
   const [checked, setChecked] = React.useState(true);
+  const [clueActive, setClueActive] = useState(false); // Nuevo estado
   const [ganador, setGanador] = React.useState(false);
   const [solucion, setSolucion] = useState(null);
   useEffect(() => {
@@ -111,6 +115,14 @@ function Game() {
       </div>
       <div className="game-info">
         <div className="settings">
+          <label  className="solucion">
+            <input
+              type="checkbox"
+            />
+            <span className="solucionSwitch">
+              Solución
+            </span>
+          </label>
           <label className="switch" >
             <input
               type="checkbox"
@@ -119,6 +131,14 @@ function Game() {
               disabled = {ganador}
             />
             <span className="slider round"></span>
+          </label>
+          <label  className="clueLabel">
+            <input
+              type="checkbox"
+            />
+            <span className="clueSwitch">
+            <FontAwesomeIcon icon={faLightbulb} className="lightbulb-icon" />
+            </span>
           </label>
         </div>
       </div>
