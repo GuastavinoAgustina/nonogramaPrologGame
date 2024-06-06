@@ -3,7 +3,8 @@
 		put/8,
 		tableroInicial/5,
 		checkGanador/3,
-        resolverNonograma/4
+        resolverNonograma/4,
+        resolverPista/9
 	]
 	).
 	
@@ -98,7 +99,9 @@ put(Content,[RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat):-
 
 	obtenerElemento(RowsClues,RowN,MyRowClues),
 	matchean(NewRow,MyRowClues,RowSat),
-	obtenerColumna(NewGrid,ColN,ColsClues,MyCol,MyColClues),
+    transpose(NewGrid,NewGridTranspose),
+    obtenerElemento(NewGridTranspose,ColN,MyCol),
+    obtenerElemento(ColsClues,ColN,MyColClues),
 	matchean(MyCol,MyColClues,ColSat).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -262,3 +265,17 @@ resolverNonograma(InitGrid, RowsClues, ColsClues, Solucion) :-
     generarCeros(InitGridTranpose,ColsCluesSat),
     generarCombinacionesRec(InitGrid, RowsClues, ColsClues, RowsCluesSat, ColsCluesSat, Solucion).
 
+resolverPista(Grilla,GrillaResol,FilaN,ColN,RowsClues, ColsClues,ResGrid, RowSat, ColSat):-
+    obtenerElemento(Grilla,FilaN,Fila),
+    obtenerElemento(Fila,ColN,MiContenido),
+    obtenerElemento(GrillaResol,FilaN,FilaResuelta),
+    obtenerElemento(FilaResuelta,ColN,MiPista),
+    (MiContenido == MiPista, 
+    ResGrid = Grilla,
+    matchean(Fila,RowsClues,RowSat),
+    transpose(Grilla,GridTranspose),
+    obtenerElemento(GridTranspose,ColN,MyCol),
+    obtenerElemento(ColsClues,ColN,MyColClues),
+	matchean(MyCol,MyColClues,ColSat)
+    ;
+    put(MiPista,[FilaN,ColN],RowsClues, ColsClues,Grilla,ResGrid,RowSat,ColSat)).

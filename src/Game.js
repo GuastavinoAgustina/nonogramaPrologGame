@@ -56,8 +56,14 @@ function Game() {
     let content = checked ? '#' : 'X';
     const rowsCluesS = JSON.stringify(rowsClues);
     const colsCluesS = JSON.stringify(colsClues);
-
-    const queryS = `put("${content}", [${i},${j}], ${rowsCluesS}, ${colsCluesS}, ${squaresS}, ResGrid, RowSat, ColSat)`;
+    let queryS = false;
+    const solucionN = JSON.stringify(solucion);
+    if (!clueActive){
+      queryS = `put("${content}", [${i},${j}], ${rowsCluesS}, ${colsCluesS}, ${squaresS}, ResGrid, RowSat, ColSat)`;
+    }else{
+      queryS = `resolverPista(${squaresS},${solucionN},${i},${j},${rowsCluesS}, ${colsCluesS},ResGrid, RowSat, ColSat)`;
+    }
+      
     setWaiting(true);
 
     pengine.query(queryS, (success, response) => {
@@ -76,6 +82,7 @@ function Game() {
       });
       setWaiting(false);
     });
+    setClueActive(false);
   }
 
   const handleChange = () => {
@@ -86,6 +93,9 @@ function Game() {
     setShowSolution(!showSolution);
   };
 
+  const toggleClue = () => {
+    setClueActive(!clueActive);
+  };
   if (!grid) {
     return null;
   }
@@ -128,6 +138,8 @@ function Game() {
           <label className="clueLabel">
             <input
               type="checkbox"
+              checked={clueActive}
+              onChange={toggleClue}
             />
             <span className="clueSwitch">
               <FontAwesomeIcon icon={faLightbulb} className="lightbulb-icon" />
