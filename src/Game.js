@@ -27,7 +27,7 @@ function Game() {
 
   function handleServerReady(instance) {
     pengine = instance;
-    const queryS = 'init(RowClues, ColumClues, Grid), tableroInicial(RowClues, ColumClues, Grid, RowsCluesSat, ColsCluesSat)';
+    const queryS = 'init(RowClues, ColumClues, Grid), tableroInicial(RowClues, ColumClues, Grid, RowsCluesSat, ColsCluesSat),checkGanador(RowsCluesSat,ColsCluesSat,Ganador)';
     pengine.query(queryS, (success, response) => {
       if (success) {
         setGrid(response['Grid']);
@@ -35,6 +35,7 @@ function Game() {
         setColsClues(response['ColumClues']);
         setRowsCluesSat(response['RowsCluesSat']);
         setColsCluesSat(response['ColsCluesSat']);
+        setGanador(response['Ganador']);
         const squaresS = JSON.stringify(response['Grid']);
         const rowsCluesS = JSON.stringify(response['RowClues']);
         const colsCluesS = JSON.stringify(response['ColumClues']);
